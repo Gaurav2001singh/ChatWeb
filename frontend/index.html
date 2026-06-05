@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Web</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <div class="left-sidebar">
+            <button class="active" data-section="chat-panel">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>Chats</span>
+            </button>
+
+            <button data-section="calls-panel">
+                <i class="fa-solid fa-phone"></i>
+                <span>Calls</span>
+            </button>
+
+            <button data-section="status-panel">
+                <i class="fa-regular fa-circle"></i>
+                <span>Status</span>
+            </button>
+
+            <button data-section="channels-panel">
+                <i class="fa-solid fa-rss"></i>
+                <span>Channels</span>
+            </button>
+
+            <button data-section="communities-panel">
+                <i class="fa-solid fa-users"></i>
+                <span>Communities</span>
+            </button>
+
+            <hr>
+
+            <button data-section="archived-panel">
+                <i class="fa-solid fa-box-archive"></i>
+                <span>Archived</span>
+            </button>
+
+            <button data-section="meta-panel" id="meta-btn">
+                <i class="fa-brands fa-meta"></i>
+                <span>Meta AI</span>
+            </button>
+            <div class="left-sidebar-bottom">
+                <button data-section="media-panel">
+                    <i class="fa-regular fa-images"></i>
+                    <span>Media</span>
+                </button>
+                <hr>
+                <div class="user-profile">
+                    <input type="file" id="profile-input" hidden>
+                    <img id="my-profile-pic" src="">
+                    <span id="my-username"></span>
+                </div>
+            </div>
+        </div>
+
+        <aside class="left">
+
+            <div class="resizer"></div>
+
+            <div id="chat-panel">
+
+                <h1>Chats</h1>
+
+                <div class="start-chat">
+                    <div class="new-chat">
+                        <span>New chat</span>
+                        <i class="fa-solid fa-circle-plus"></i>
+                    </div>
+                    <div class="menu">
+                        <span>menu</span>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                </div>
+
+                <div class="search-box">
+                    <i class="fa-brands fa-sistrix"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <div class="filters">
+                    <button id="allFilter" class="filter-btn active">All</button>
+                    <button id="unreadFilter" class="filter-btn">Unread
+                        <span id="unreadCount">0</span>
+                    </button>
+                    <button id="favFilter" class="filter-btn">Favourites</button>
+                    <button id="groupFilter" class="filter-btn">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Groups</span>
+                    </button>
+                </div>
+                <div id="emptyChatsMessage" class="empty-chats"></div>
+
+                <div id="chat-list"></div>
+            </div>
+
+            <div id="contact-panel" class="side-panel hidden">
+
+                <div class="contact-top">
+
+                    <div id="contactBackBtn">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </div>
+
+                    <h3>Select Contact</h3>
+
+                </div>
+
+                <div class="add-contact-box">
+
+                    <input type="text" id="contact-name" placeholder="Enter contact name">
+
+                    <input type="text" id="contact-number" placeholder="Enter phone number">
+
+                    <button id="add-contact-btn">
+                        Add Contact
+                    </button>
+
+                </div>
+
+                <div class="contact-grp">
+                    <div class="new-group">
+                        <i class="fa-solid fa-users"></i>
+                        <span>New group</span>
+                    </div>
+
+                    <div class="new-contact">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>New contact</span>
+                    </div>
+
+                    <div class="new-community">
+                        <i class="fa-solid fa-users"></i>
+                        <span>New community</span>
+                    </div>
+                </div>
+
+                <div id="contact-list"></div>
+
+            </div>
+
+            <!-- panel-sections -->
+
+            <div id="calls-panel" class="side-panel hidden">
+                <div class="calls-header">
+                    <h1>Calls</h1>
+
+                    <div class="calls-icons">
+                        <i class="fa-solid fa-phone-volume"></i>
+                    </div>
+                </div>
+
+                <div class="call-search-box">
+                    <i class="fa-brands fa-sistrix"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <div class="calls-favs">
+                    <h3>Favourites</h3>
+                    <div class="add-fav">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <h4>Add favourite</h4>
+                    </div>
+                    <hr>
+                </div>
+
+                <p class="recent-">Recent</p>
+
+                <div class="call-list">
+
+                    <div class="call-item">
+                        <img src="https://i.pravatar.cc/100?img=10">
+
+                        <div class="call-info">
+                            <h4>Rahul Sharma</h4>
+
+                            <p class="missed">
+                                <i class="fa-solid fa-arrow-down"></i>
+                                Missed voice call
+                            </p>
+                        </div>
+
+                        <div class="call-action">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                    </div>
+
+                    <div class="call-item">
+                        <img src="https://i.pravatar.cc/100?img=12">
+
+                        <div class="call-info">
+                            <h4>Priya Patel</h4>
+
+                            <p>
+                                <i class="fa-solid fa-arrow-up"></i>
+                                Outgoing video call
+                            </p>
+                        </div>
+
+                        <div class="call-action">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="status-panel" class="side-panel hidden">
+                <div class="status-header">
+                    <h1>Status</h1>
+
+                    <div class="status-icons">
+                        <div class="status-camera">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" id="statusInput" hidden>
+                        </div>
+
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                </div>
+
+                <div class="my-status">
+
+                    <div class="my-status-img">
+                        <img src="img/default-avatar.svg" id="myStatusInput">
+                        <span>+</span>
+                    </div>
+
+                    <div class="my-status-info">
+                        <h3>My status</h3>
+                        <p>Add status</p>
+                    </div>
+
+                </div>
+
+                <p class="status-">Recent updates</p>
+
+                <div class="status-list">
+                </div>
+            </div>
+
+            <div class="status-viewer hidden">
+                <div class="status-bars"></div>
+
+                <div class="status-left"></div>
+
+                <div class="status-right"></div>
+
+                <div class="status-top">
+
+                    <div class="status-user">
+
+                        <img id="viewerProfile">
+
+                        <div>
+                            <h4 id="viewerUsername"></h4>
+                            <p id="viewerTime"></p>
+                        </div>
+
+
+                    </div>
+
+                    <div class="status-actions">
+                        <div class="new-status-btn">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <span>New Status</span>
+                        </div>
+
+                        <i class="fa-solid fa-trash delete-status"></i>
+                        <i class="fa-solid fa-xmark close-status"></i>
+
+                    </div>
+
+                </div>
+                <div class="status-bottom">
+
+                    <!-- Caption -->
+                    <div class="status-caption-box">
+                        <p id="viewerCaption">
+                            My new status ✨
+                        </p>
+                    </div>
+
+                    <!-- My Status -->
+                    <div class="status-owner-box">
+
+                        <div class="status-view-count">
+                            <i class="fa-regular fa-eye"></i>
+
+                            <span id="viewCountText">
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Viewer Reply -->
+                    <div class="status-reply-box">
+
+                        <input type="text" id="replyInput" placeholder="Type a reply...">
+
+                        <button id="sendReplyBtn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="status-content">
+                </div>
+
+                <div class="status-views-popup hidden">
+
+                    <div class="status-views-header">
+                        <h3 id="viewCount"></h3>
+
+                        <i class="fa-solid fa-xmark close-views"></i>
+                    </div>
+
+                    <div class="status-views-list"></div>
+
+                </div>
+
+            </div>
+            <div class="status-preview hidden">
+
+                <div class="preview-top">
+
+                    <i class="fa-solid fa-xmark close-preview"></i>
+
+                </div>
+
+                <div class="preview-content">
+
+                    <img id="previewImage" hidden>
+                    <video id="previewVideo" controls hidden></video>
+
+                </div>
+
+                <div class="preview-bottom">
+
+                    <input type="text" id="previewCaption" placeholder="Add a caption...">
+
+                    <button id="sendStatusBtn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="channels-panel" class="side-panel hidden">
+
+                <div class="panel-top">
+                    <h1>Channels</h1>
+
+                    <div class="panel-icons">
+                        <i class="fa-solid fa-plus"></i>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                </div>
+
+                <div class="channel-search-box">
+                    <i class="fa-brands fa-sistrix"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <div class="channel-card">
+                    <img src="https://i.pravatar.cc/100?img=30">
+
+                    <div class="channel-info">
+                        <h3>Tech World</h3>
+                        <p>Latest web dev updates everyday</p>
+                    </div>
+                </div>
+
+                <div class="channel-card">
+                    <img src="https://i.pravatar.cc/100?img=31">
+
+                    <div class="channel-info">
+                        <h3>Vision Academy</h3>
+                        <p>Classes and placement updates</p>
+                    </div>
+                </div>
+
+                <div class="find-channels">
+                    <p>Find channels to follow</p>
+
+                    <div class="followers-channel-card">
+                        <img src="https://i.pravatar.cc/100?img=31">
+
+                        <div class="user-followers">
+                            <h3>Teach World</h3>
+                            <p>
+                                <span>21k</span>
+                                followrs
+                            </p>
+                        </div>
+                        <button>follow</button>
+                    </div>
+
+                    <div class="followers-channel-card">
+                        <img src="https://i.pravatar.cc/100?img=31">
+
+                        <div class="user-followers">
+                            <h3>Vision academy</h3>
+                            <p>
+                                <span>51k</span>
+                                followrs
+                            </p>
+                        </div>
+                        <button>follow</button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div id="communities-panel" class="side-panel hidden">
+
+                <div class="panel-top">
+                    <h1>Communities</h1>
+
+                    <div class="panel-icons">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="community-create">
+                    <div class="community-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div>
+                        <h3>New community</h3>
+                    </div>
+                </div>
+
+                <div class="community-item">
+                    <img src="https://i.pravatar.cc/100?img=20">
+
+                    <div>
+                        <h3>Vision Students</h3>
+                        <p>120 members</p>
+                    </div>
+                </div>
+
+                <div class="community-item">
+                    <img src="https://i.pravatar.cc/100?img=22">
+
+                    <div>
+                        <h3>Developers Hub</h3>
+                        <p>540 members</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div id="archived-panel" class="side-panel hidden">
+
+                <div class="panel-top">
+                    <h1>Archived</h1>
+                </div>
+                <div class="archived-msg">
+                    <p>These chats are unarchived when new messages are received. To change this experience, go to
+                        <span>Settings > Chats</span> on your phone
+                    </p>
+                    <hr>
+                </div>
+
+                <div class="archive-item">
+                    <img src="https://i.pravatar.cc/100?img=12">
+
+                    <div class="archive-info">
+                        <h3>Rahul Sharma</h3>
+                        <p>You archived this chat</p>
+                    </div>
+                </div>
+
+                <div class="archive-item">
+                    <img src="https://i.pravatar.cc/100?img=15">
+
+                    <div class="archive-info">
+                        <h3>Vision Academy</h3>
+                        <p>Old conversation</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div id="meta-panel" class="side-panel hidden">
+
+                <div class="panel-top">
+                    <h1>Meta AI</h1>
+
+                    <div class="panel-icons">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                </div>
+
+                <div class="meta-box">
+                    <i class="fa-brands fa-meta"></i>
+
+                    <h2>Ask Meta AI</h2>
+
+                    <p>
+                        Get answers, ideas and coding help instantly.
+                    </p>
+
+                    <button>Start Chat</button>
+                </div>
+
+            </div>
+
+            <div id="media-panel" class="side-panel hidden">
+
+                <div class="panel-top">
+                    <h1>Media</h1>
+
+                    <div class="panel-icons">
+                        <i class="fa-solid fa-images"></i>
+                    </div>
+                </div>
+
+                <div class="media-gallery">
+
+                    <img src="img/default-avatar.svg">
+                    <img src="img/default-avatar.svg">
+                    <img src="img/default-avatar.svg">
+                    <img src="img/default-avatar.svg">
+                    <img src="img/default-avatar.svg">
+
+                </div>
+
+            </div>
+
+            <!-- panel-sections -->
+
+            <div id="profile-panel" class="hidden">
+
+                <h2 id="profile-name">Profile</h2>
+
+
+                <div class="profile-search-bar">
+                    <i class="fa-brands fa-sistrix"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+
+                <div class="profile-top">
+                    <p id="profile-about"></p>
+                    <img id="profile-view-img" src="">
+                </div>
+
+                <div class="profile-options">
+                    <div class="option">General</div>
+                    <div class="option">Profile</div>
+                    <div class="option">Account</div>
+                    <div class="option">Privacy</div>
+                    <div class="option">Chats</div>
+                    <div class="option">Video & voice</div>
+                    <div class="option">Notifications</div>
+                    <div class="option">Keyboard shortcuts</div>
+                    <div class="option">Help and feedback</div>
+                    <div class="option" id="logout">Log out</div>
+                </div>
+
+
+            </div>
+
+            <div id="profile-edit-panel" class="hidden">
+
+                <div class="profile-header">
+                    <div id="back-to-profile">⬅</div>
+                    <h2>Edit profile</h2>
+                </div>
+
+                <div class="profile-edit-top">
+                    <img id="profile-edit-img" src="">
+                    <div id="change-photo-btn">
+
+                        <div class="edit-main">
+                            <i class="fa-solid fa-camera"></i>
+                            <p>Edit</p>
+                        </div>
+
+                        <div class="photo-options">
+                            <span id="take-photo">
+                                <i class="fa-solid fa-camera"></i>
+                                Take photo
+                            </span>
+
+                            <span id="upload-btn">
+                                <i class="fa-solid fa-upload"></i>
+                                <input type="file" id="profile-input" hidden>
+                                Upload photo
+                            </span>
+
+                            <span id="remove-photo-btn">
+                                <i class="fa-solid fa-trash"></i>
+                                Remove photo
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="profile-row">
+                    <label>Name</label>
+                    <div class="profile-value">
+                        <span id="nameText"></span>
+                        <i class="fa-solid fa-pen edit-icon"></i>
+                    </div>
+                </div>
+
+                <div class="profile-row">
+                    <label>About</label>
+                    <div class="profile-value">
+                        <span id="aboutText">
+                            Yesterday is over, it's a different day☀️
+                        </span>
+                        <i class="fa-solid fa-pen edit-about-icon"></i>
+                    </div>
+                </div>
+
+                <div class="profile-row">
+                    <label>Phone</label>
+                    <div class="profile-value phone">
+                        <div class="phone-left">
+                            <i class="fa-solid fa-phone"></i>
+                            <span id="phoneNumber">+91 8779798560</span>
+                        </div>
+                        <i class="fa-regular fa-copy copy-icon" id="copyPhone"></i>
+                        <span id="copyMsg">Number copied!</span>
+                    </div>
+                </div>
+
+                <div id="profile-img-model" class="profile-img-preview-modal">
+                    <span id="profie-close-Preview">&times;</span>
+                    <img id="profile-viewImg" src="">
+                </div>
+            </div>
+        </aside>
+
+
+        <main class="chat-area">
+
+            <div class="chat-header">
+                <span class="back-btn" id="backBtn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </span>
+
+                <div class="chat-user">
+
+                    <img src="">
+
+                    <div class="chat-user-info">
+                        <p id="chatUsername"></p>
+                        <span id="userStatus"></span>
+                    </div>
+
+                </div>
+
+                <div class="chat-actions">
+                    <span>
+                        <i class="fa-solid fa-video"></i>
+                        <span>Video Call</span>
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-phone"></i>
+                        <span>Voice Call</span>
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>Search</span>
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-ellipsis-v"></i>
+                        <span>Menu</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="display-btns">
+                    <button class="action-btn">
+                        <i class="fa-solid fa-file"></i>
+                        <span>Document</span>
+                    </button>
+
+                    <button class="action-btn display-new-contact">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>New Contact</span>
+                    </button>
+
+                    <button class="action-btn">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="message-input">
+                <input type="text" placeholder="Type a message" id="message-input">
+                <button id="send-message">Send</button>
+            </div>
+
+            <div id="messageMenu" class="message-menu hidden">
+                <div class="menu-item" id="deleteMeBtn">
+                    Delete for me
+                </div>
+
+                <div class="menu-item" id="deleteEveryoneBtn">
+                    Delete for everyone
+                </div>
+
+                <div class="menu-item" id="copyMsgBtn">
+                    Copy message
+                </div>
+            </div>
+
+            <div id="profileModal" class="modal">
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <i class="fa-solid fa-arrow-left" id="closeModal"></i>
+                        <span>Contact info</span>
+                        <i class="fa-solid fa-pen" id="editContactBtn"></i>
+                    </div>
+
+                    <div class="modal-body">
+                        <img id="modalImg" src="">
+                        <h2 id="modalName">Gaurav Singh</h2>
+                        <p class="modal-phone" id="modalPhone">+91 8779798560</p>
+
+                        <div class="contact-actions">
+                            <div class="action-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span>Search</span>
+                            </div>
+
+                            <div class="action-box">
+                                <i class="fa-solid fa-video"></i>
+                                <span>Video</span>
+                            </div>
+
+                            <div class="action-box">
+                                <i class="fa-solid fa-phone"></i>
+                                <span>Voice</span>
+                            </div>
+                        </div>
+
+                        <div class="modal-about">
+                            <label>About</label>
+                            <p id="modalAbout">
+                                Yesterday is over, it's a different day ☀️
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="media-top">
+                            <span>Media, links and docs</span>
+                            <span>9</span>
+                        </div>
+
+                        <div class="media-grid">
+                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
+                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
+                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
+                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="opt"><i class="fa-regular fa-star"></i> Starred messages</div>
+                        <div class="opt"><i class="fa-regular fa-bell"></i> Notification settings</div>
+                        <div class="opt"><i class="fa-solid fa-clock"></i> Disappearing messages</div>
+                        <div class="opt"><i class="fa-solid fa-lock"></i> Encryption</div>
+                    </div>
+
+                    <div class="section groups-section">
+                        <p class="section-">6 groups in common</p>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=11">
+                            <div class="group-info">
+                                <p class="group-name">Vision Academy IT Batch 2025</p>
+                                <p class="group-members">Aditi, Aman, Anil, Arfat, Bhavesh...</p>
+                            </div>
+                        </div>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=12">
+                            <div class="group-info">
+                                <p class="group-name">Tek Mud 🌐</p>
+                                <p class="group-members">Arfat, Ruturaj, +91 77150...</p>
+                            </div>
+                        </div>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=13">
+                            <div class="group-info">
+                                <p class="group-name">Vision Class (10:30 to 12:30)</p>
+                                <p class="group-members">Aditi, Aman, Anil, Arfat...</p>
+                            </div>
+                        </div>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=14">
+                            <div class="group-info">
+                                <p class="group-name">JS Advance (Vision Academy)</p>
+                                <p class="group-members">Aditi, Aman, Anil...</p>
+                            </div>
+                        </div>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=15">
+                            <div class="group-info">
+                                <p class="group-name">VA-Placement</p>
+                                <p class="group-members">Aditi, Aman, Bhavesh...</p>
+                            </div>
+                        </div>
+
+                        <div class="group-item">
+                            <img src="https://i.pravatar.cc/40?img=16">
+                            <div class="group-info">
+                                <p class="group-name">Vision Activity Group 🏋️</p>
+                                <p class="group-members">Anil, Arfat, Bhavesh...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="opt"><i class="fa-regular fa-heart"></i> Add to favourites</div>
+                        <div class="opt danger"><i class="fa-solid fa-ban"></i> Clear chat</div>
+                        <div class="opt danger"><i class="fa-solid fa-trash"></i> Delete chat</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="editContactModal" class="edit-contact-modal">
+
+                <div class="edit-contact-content">
+
+                    <div class="modal-header">
+
+                        <i class="fa-solid fa-arrow-left" id="closeEditContact">
+                        </i>
+
+                        <span>Edit Contact</span>
+
+                    </div>
+
+                    <div class="edit-body">
+
+                        <input type="text" id="editContactName" placeholder="Contact Name">
+
+                        <input type="text" id="editContactPhone" readonly>
+
+                        <button id="saveContactNameBtn">
+                            Save
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div id="imagePreviewModal" class="img-preview-modal">
+                <span id="closePreview">&times;</span>
+                <img id="previewImg" src="">
+            </div>
+
+
+        </main>
+
+
+    </div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

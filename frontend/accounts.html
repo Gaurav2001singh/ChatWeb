@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Web🌐</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at top left,
+                    rgba(37, 211, 102, 0.08),
+                    transparent 30%),
+                radial-gradient(circle at bottom right,
+                    rgba(0, 168, 132, 0.08),
+                    transparent 30%),
+                #0b141a;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* WELCOME SCREEN */
+
+        .welcome-screen {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at top left,
+                    rgba(37, 211, 102, 0.08),
+                    transparent 30%),
+                radial-gradient(circle at bottom right,
+                    rgba(0, 168, 132, 0.08),
+                    transparent 30%),
+                #0b141a;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+
+            transition: 0.7s ease;
+        }
+
+        .welcome-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.05);
+        }
+
+        .welcome-card {
+            width: 90%;
+            max-width: 850px;
+            height: 360px;
+
+            background: #0b0f13;
+
+            border-radius: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.06);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 40px;
+
+            animation: fadeWelcome 1s ease;
+        }
+
+        @keyframes fadeWelcome {
+
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-logo {
+            width: 50px;
+            border-radius: 50%;
+            background: #25d366;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 0 35px rgba(37, 211, 102, 0.35);
+        }
+
+        .welcome-logo i {
+            color: white;
+            font-size: 46px;
+        }
+
+        .welcome-card h1 {
+            color: white;
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-card p {
+            color: #aebac1;
+            max-width: 650px;
+            line-height: 1.7;
+            margin-bottom: 35px;
+        }
+
+        .welcome-card button {
+            width: 180px;
+            height: 52px;
+
+            border: none;
+            border-radius: 40px;
+
+            background: #25d366;
+
+            color: #111b21;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .welcome-card button:hover {
+            transform: translateY(-3px);
+            background: #1ebe5d;
+
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            height: 700px;
+            background: #111b21;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(37, 211, 102, 0.05);
+
+            position: relative;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+
+            transition: 0.7s ease;
+        }
+
+        .auth-wrapper.show {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        /* LEFT */
+
+        .left-panel {
+            width: 50%;
+            background: #111b21;
+            padding: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .left-content {
+            max-width: 420px;
+            animation: fadeLeft 1s ease;
+        }
+
+        @keyframes fadeLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .logo {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #25d366;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .logo i {
+            color: white;
+            font-size: 42px;
+        }
+
+        .left-content h1 {
+            color: white;
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .left-content p {
+            color: #8696a0;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #d1d7db;
+        }
+
+        .feature i {
+            color: #25d366;
+            font-size: 18px;
+        }
+
+        /* RIGHT */
+
+        .right-panel {
+            width: 50%;
+            background: #202c33;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forms-container {
+            width: 200%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.7s ease;
+        }
+
+        .forms-container.active {
+            transform: translateX(-50%);
+        }
+
+        .form-box {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .form-content {
+            width: 100%;
+            max-width: 360px;
+            animation: fadeUp 0.8s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-content h2 {
+            color: white;
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .sub-text {
+            color: #8696a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            color: #8696a0;
+        }
+
+        .input-group input {
+            width: 100%;
+            height: 58px;
+            border: none;
+            outline: none;
+            border-radius: 14px;
+            background: #2a3942;
+            padding: 0 18px 0 52px;
+            color: white;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border: 1px solid #25d366;
+            box-shadow: 0 0 10px rgba(37, 211, 102, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: #8696a0;
+        }
+
+        .file-input {
+            background: #2a3942;
+            border-radius: 14px;
+            padding: 15px;
+            color: #8696a0;
+            margin-bottom: 18px;
+        }
+
+        .file-input input {
+            color: white;
+            width: 100%;
+        }
+
+        .auth-btn {
+            width: 100%;
+            height: 58px;
+            border: none;
+            border-radius: 40px;
+            background: #25d366;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .auth-btn:hover {
+            background: #1ebe5d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.25);
+        }
+
+        .switch-text {
+            margin-top: 22px;
+            text-align: center;
+            color: #8696a0;
+            font-size: 14px;
+        }
+
+        .switch-text span {
+            color: #25d366;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .switch-text span:hover {
+            text-decoration: underline;
+        }
+
+        @media(max-width: 950px) {
+
+            body {
+                padding: 15px;
+                height: auto;
+            }
+
+            .auth-wrapper {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+            }
+
+            .left-panel {
+                padding: 40px 30px;
+            }
+
+            .left-content h1 {
+                font-size: 38px;
+            }
+
+            .forms-container {
+                width: 200%;
+                min-height: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- WELCOME SCREEN -->
+
+    <div class="welcome-screen" id="welcomeScreen">
+
+        <div class="welcome-card">
+
+            <div class="welcome-logo">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+
+            <h1>Welcome to Chat Web</h1>
+
+            <p>
+                Simple, reliable and private.
+                Message privately, make calls and share
+                files with your friends, family and colleagues.
+            </p>
+
+            <button id="openAuth">
+                Log in
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="auth-wrapper">
+
+        <div class="left-panel">
+
+            <div class="left-content">
+
+                <div class="logo">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+
+                <h1>Chat Securely</h1>
+
+                <p>
+                    Connect with your friends instantly using
+                    real-time messaging, online status,
+                    seen ticks and modern style chat system.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>End-to-end encrypted messaging</span>
+                    </div>
+
+                    <div class="feature">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Real-time seen and delivered ticks</span>
+                    </div>
+
+                    <div class="feature">
+                        <i class="fa-solid fa-user-group"></i>
+                        <span>Private chats with online users</span>
+                    </div>
+
+                    <div class="feature">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Fast modern chat experience</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="right-panel">
+
+            <div class="forms-container" id="formsContainer">
+
+                <!-- LOGIN -->
+
+                <div class="form-box">
+
+                    <div class="form-content">
+
+                        <h2>Login</h2>
+
+                        <p class="sub-text">
+                            Login to continue chatting
+                        </p>
+
+                        <form id="loginForm">
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-phone"></i>
+
+                                <input type="text" id="loginPhone" placeholder="Phone number">
+                            </div>
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-lock"></i>
+
+                                <input type="password" id="loginPassword" placeholder="Password">
+                            </div>
+
+                            <button class="auth-btn" type="submit">
+                                Login
+                            </button>
+
+                        </form>
+
+                        <p class="switch-text">
+                            Don't have an account?
+                            <span id="showRegister">
+                                Register
+                            </span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- REGISTER -->
+
+                <div class="form-box">
+
+                    <div class="form-content">
+
+                        <h2>Register</h2>
+
+                        <p class="sub-text">
+                            Create your new account
+                        </p>
+
+                        <form id="registerForm">
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-user"></i>
+
+                                <input type="text" id="username" placeholder="Username">
+                            </div>
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-envelope"></i>
+
+                                <input type="email" id="email" placeholder="Email">
+                            </div>
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-phone"></i>
+
+                                <input type="text" id="registerPhone" placeholder="Phone number">
+                            </div>
+
+                            <div class="input-group">
+                                <i class="fa-solid fa-lock"></i>
+
+                                <input type="password" id="registerPassword" placeholder="Password">
+                            </div>
+
+                            <div class="file-input">
+                                <input type="file" id="profilePicture">
+                            </div>
+
+                            <button class="auth-btn" type="submit">
+                                Register
+                            </button>
+
+                        </form>
+
+                        <p class="switch-text">
+                            Already have an account?
+                            <span id="showLogin">
+                                Login
+                            </span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const formsContainer =
+            document.getElementById("formsContainer");
+
+        const showRegister =
+            document.getElementById("showRegister");
+
+        const showLogin =
+            document.getElementById("showLogin");
+
+        showRegister.addEventListener("click", () => {
+            formsContainer.classList.add("active");
+        });
+
+        showLogin.addEventListener("click", () => {
+            formsContainer.classList.remove("active");
+        });
+
+        const welcomeScreen =
+            document.getElementById("welcomeScreen");
+
+        const authWrapper =
+            document.querySelector(".auth-wrapper");
+
+        const openAuth =
+            document.getElementById("openAuth");
+
+        openAuth.addEventListener("click", () => {
+
+            welcomeScreen.classList.add("hide");
+
+            authWrapper.classList.add("show");
+
+        });
+
+        /* LOGIN */
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        loginForm.addEventListener("submit",
+            async (e) => {
+
+                e.preventDefault();
+
+                const number =
+                    document.getElementById("loginPhone").value;
+
+                const password =
+                    document.getElementById("loginPassword").value;
+
+                if (!number || !password) {
+                    alert("Please fill all fields");
+                    return;
+                }
+
+                try {
+
+                    const response = await fetch(
+                        "http://localhost:5000/api/auth/login",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                number,
+                                password
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+
+                        localStorage.setItem(
+                            "token",
+                            data.token
+                        );
+
+                        localStorage.setItem(
+                            "userId",
+                            data.userId
+                        );
+
+                        localStorage.setItem(
+                            "profilePicture",
+                            data.ProfilePicture || ""
+                        );
+
+                        localStorage.setItem(
+                            "username",
+                            data.Username
+                        );
+
+                        setTimeout(() => {
+                            window.location.href = "index.html";
+                        }, 1000)
+
+                    } else {
+                        alert(data.message);
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            });
+
+        /* REGISTER */
+
+        const registerForm =
+            document.getElementById("registerForm");
+
+        registerForm.addEventListener("submit",
+            async (e) => {
+
+                e.preventDefault();
+
+                const username =
+                    document.getElementById("username").value;
+
+                const email =
+                    document.getElementById("email").value;
+
+                const number =
+                    document.getElementById("registerPhone").value;
+
+                const password =
+                    document.getElementById("registerPassword").value;
+
+                const profilePicture =
+                    document.getElementById("profilePicture").files[0];
+
+                if (!username || !email || !number || !password) {
+                    alert("Please fill all fields");
+                    return;
+                }
+
+                const formData = new FormData();
+
+                formData.append("username", username);
+                formData.append("email", email);
+                formData.append("number", number);
+                formData.append("password", password);
+
+                if (profilePicture) {
+                    formData.append("profile", profilePicture);
+                }
+
+                try {
+
+                    const response = await fetch(
+                        "http://localhost:5000/api/auth/register",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+
+                        localStorage.setItem(
+                            "profilePicture",
+                            data.ProfilePicture
+                        );
+
+                        alert("Registered Successfully");
+
+                        formsContainer.classList.remove("active");
+
+                    } else {
+
+                        alert(data.message);
+
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

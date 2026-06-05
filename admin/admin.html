@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Admin Panel</title>
+
+    <link rel="stylesheet"
+        href="admin.css">
+
+</head>
+
+<body>
+
+    <div class="admin-container">
+
+        <aside class="sidebar">
+
+            <h2>Chat Admin</h2>
+
+            <button id="dashboardBtn">
+                Dashboard
+            </button>
+
+            <button id="usersBtn">
+                Users
+            </button>
+
+        </aside>
+
+        <main class="content">
+
+            <div class="cards">
+
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <p id="totalUsers">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Online Users</h3>
+                    <p id="onlineUsers">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Messages</h3>
+                    <p id="totalMessages">0</p>
+                </div>
+
+                <div class="card">
+                    <h3>Total Chats</h3>
+                    <p id="totalChats">0</p>
+                </div>
+
+            </div>
+
+            <div id="usersTable">
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

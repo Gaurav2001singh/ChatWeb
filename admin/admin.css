@@ -1,0 +1,82 @@
+body {
+
+    margin: 0;
+
+    font-family: Arial;
+
+    background: #111b21;
+
+    color: white;
+}
+
+.admin-container {
+
+    display: flex;
+
+    height: 100vh;
+}
+
+.sidebar {
+
+    width: 250px;
+
+    background: #202c33;
+
+    padding: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.sidebar button {
+
+    padding: 12px;
+
+    border: none;
+
+    background: #2a3942;
+
+    color: white;
+
+    cursor: pointer;
+
+    border-radius: 8px;
+}
+
+.content {
+
+    flex: 1;
+
+    padding: 20px;
+
+    overflow: auto;
+}
+
+.cards {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+}
+
+.card {
+
+    background: #202c33;
+
+    padding: 20px;
+
+    border-radius: 15px;
+}
+
+.card p {
+
+    font-size: 35px;
+
+    font-weight: bold;
+}
