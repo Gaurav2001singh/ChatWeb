@@ -7,7 +7,7 @@ exports.createUser = async (username, email, number, password, profilePicture) =
             VALUES (${username}, ${email}, ${number}, ${password}, ${profilePicture})
         `;
 
-        return { username, email };
+        return { username, email, number };
 
     } catch (error) {
         console.error("Error: ", error);

@@ -7,6 +7,10 @@
     <title>Chat Web</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
@@ -17,21 +21,25 @@
             <button class="active" data-section="chat-panel">
                 <i class="fa-brands fa-whatsapp"></i>
                 <span>Chats</span>
+                <span class="sidebar-badge count-badge hidden" id="sidebarChatBadge">0</span>
             </button>
 
             <button data-section="calls-panel">
                 <i class="fa-solid fa-phone"></i>
                 <span>Calls</span>
+                <span class="sidebar-badge dot-badge hidden" id="sidebarCallsBadge"></span>
             </button>
 
             <button data-section="status-panel">
                 <i class="fa-regular fa-circle"></i>
                 <span>Status</span>
+                <span class="sidebar-badge dot-badge hidden" id="sidebarStatusBadge"></span>
             </button>
 
             <button data-section="channels-panel">
                 <i class="fa-solid fa-rss"></i>
                 <span>Channels</span>
+                <span class="sidebar-badge dot-badge hidden" id="sidebarChannelsBadge"></span>
             </button>
 
             <button data-section="communities-panel">
@@ -50,6 +58,7 @@
                 <i class="fa-brands fa-meta"></i>
                 <span>Meta AI</span>
             </button>
+
             <div class="left-sidebar-bottom">
                 <button data-section="media-panel">
                     <i class="fa-regular fa-images"></i>
@@ -64,44 +73,208 @@
             </div>
         </div>
 
-        <aside class="left">
+        <div id="toast" class="wa-toast">
 
+            <div class="toast-left">
+                <i id="toastIcon" class="fa-solid fa-check"></i>
+                <span id="toastText"></span>
+            </div>
+
+            <button id="toastUndo" class="toast-undo hidden">
+                Undo
+            </button>
+
+        </div>
+        <aside class="left">
             <div class="resizer"></div>
 
-            <div id="chat-panel">
+            <div id="chat-panel" class="side-panel">
 
-                <h1>Chats</h1>
+                <div class="chat-top">
+                    <h1>Chats</h1>
 
-                <div class="start-chat">
-                    <div class="new-chat">
-                        <span>New chat</span>
-                        <i class="fa-solid fa-circle-plus"></i>
-                    </div>
-                    <div class="menu">
-                        <span>menu</span>
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <div class="start-chat">
+                        <div class="new-chat">
+                            <span>New chat</span>
+                            <i class="fa-solid fa-circle-plus"></i>
+                        </div>
+                        <div class="menu" id="menuBtn">
+                            <span>Menu</span>
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <div class="dropdown-item">
+                                    <i class="fa-solid fa-user-group"></i>
+                                    <p>New group</p>
+                                </div>
+
+                                <div class="dropdown-item">
+                                    <i class="fa-solid fa-box-archive"></i>
+                                    <p>Archived</p>
+                                </div>
+
+                                <div class="dropdown-item" id="openStarredMessages">
+                                    <i class="fa-regular fa-star"></i>
+                                    <p>Starred messages</p>
+                                </div>
+
+                                <div class="dropdown-item">
+                                    <i class="fa-regular fa-square-check"></i>
+                                    <p>Select chats</p>
+                                </div>
+
+                                <div class="dropdown-item" id="markAllReadBtn">
+                                    <i class="fa-solid fa-check-double"></i>
+                                    <p>Mark all as read</p>
+                                </div>
+
+                                <div class="divider"></div>
+
+                                <div class="dropdown-item" id="dropDownLock">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <p>App lock</p>
+                                </div>
+
+                                <div class="dropdown-item logoutItems" id="logout-item">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    <p>Log out</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="search-box">
-                    <i class="fa-brands fa-sistrix"></i>
-                    <input type="text" placeholder="Search">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="chatSearchInput" placeholder="Search or start a new chat"
+                            autocomplete="off">
+                        <button id="clearSearchBtn" class="clear-search-x hidden">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="recent-searches-container collapsed" id="recentSearchesContainer">
+                    <div class="recent-searches-header">
+                        <span>Recent searches</span>
+                        <button id="clearAllRecentBtn" class="clear-all-btn">Clear all</button>
+                    </div>
+                    <div id="recentSearchesList" class="recent-searches-list"></div>
                 </div>
 
                 <div class="filters">
                     <button id="allFilter" class="filter-btn active">All</button>
-                    <button id="unreadFilter" class="filter-btn">Unread
+                    <button id="unreadFilter" class="filter-btn">
+                        Unread
                         <span id="unreadCount">0</span>
                     </button>
-                    <button id="favFilter" class="filter-btn">Favourites</button>
-                    <button id="groupFilter" class="filter-btn">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Groups</span>
+
+                    <button id="favFilter" class="filter-btn">
+                        Favourites
+                        <span id="favCount">0</span>
+                    </button>
+                    <button id="caretFilter" class="filter-btn">
+                        <i class="fa-solid fa-caret-down"></i>
                     </button>
                 </div>
                 <div id="emptyChatsMessage" class="empty-chats"></div>
 
                 <div id="chat-list"></div>
+            </div>
+
+            <div id="chatItemMenu" class="chat-item-menu hidden">
+
+                <div class="menu-item" id="archiveChat">
+                    <i class="fa-regular fa-box-archive"></i>
+                    <span>Archive chat</span>
+                </div>
+
+                <div class="menu-item" id="muteChat">
+                    <i class="fa-regular fa-bell-slash"></i>
+                    <span>Mute notifications</span>
+                    <i class="fa-solid fa-angle-right"></i>
+                </div>
+
+                <div class="menu-item" id="pinChat">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <span>Pin chat</span>
+                </div>
+
+                <div class="menu-item" id="markUnread">
+                    <i class="fa-regular fa-envelope"></i>
+                    <span>Mark as unread</span>
+                </div>
+
+                <div class="menu-item" id="favChat">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>Add to favourites</span>
+                </div>
+
+                <div class="menu-item" id="addList">
+                    <i class="fa-regular fa-rectangle-list"></i>
+                    <span>Add to list</span>
+                    <i class="fa-solid fa-angle-right"></i>
+                </div>
+
+                <hr>
+
+                <div class="menu-item danger" id="blockChat">
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Block</span>
+                </div>
+
+                <div class="menu-item danger" id="clearChat">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                    <span>Clear chat</span>
+                </div>
+
+                <div class="menu-item danger" id="deleteChat">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <span>Delete chat</span>
+                </div>
+
+            </div>
+
+            <div id="muteModal" class="mute-modal hidden">
+                <div class="mute-modal-content">
+                    <h3>Mute notifications for</h3>
+                    <div class="mute-options">
+                        <label><input type="radio" name="muteDuration" value="8_hours" checked> 8 hours</label>
+                        <label><input type="radio" name="muteDuration" value="1_week"> 1 week</label>
+                        <label><input type="radio" name="muteDuration" value="always"> Always</label>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="cancelMuteBtn" class="btn-secondary">Cancel</button>
+                        <button id="confirmMuteBtn" class="btn-primary">Mute</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="starred-panel" class="hidden">
+
+                <div class="star-header">
+
+                    <button id="backFromStarred">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+
+                    <h2>Starred messages</h2>
+
+                    <button id="starredMenu">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+
+                </div>
+
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="starredSearch" placeholder="Search">
+                </div>
+
+                <div id="starredMessagesList" class="starred-messages-list">
+                </div>
+
             </div>
 
             <div id="contact-panel" class="side-panel hidden">
@@ -118,12 +291,12 @@
 
                 <div class="add-contact-box">
 
-                    <input type="text" id="contact-name" placeholder="Enter contact name">
+                    <input type="text" id="contact-name" placeholder="Name">
 
-                    <input type="text" id="contact-number" placeholder="Enter phone number">
+                    <input type="text" id="contact-number" placeholder="Phone">
 
                     <button id="add-contact-btn">
-                        Add Contact
+                        Add
                     </button>
 
                 </div>
@@ -150,6 +323,17 @@
             </div>
 
             <!-- panel-sections -->
+            <div class="modal-overlay" id="logoutModal">
+                <div class="modal-card">
+                    <h2>Log out?</h2>
+                    <p>You can lock WhatsApp with a password instead so it's easier to access again later.</p>
+                    <div class="modal-actions">
+                        <button class="btn-lock" id="modalLockBtn">Lock app</button>
+                        <button class="btn-cancel" id="modalCancelBtn">Cancel</button>
+                        <button class="btn-logout" id="modalConfirmLogoutBtn">Log out</button>
+                    </div>
+                </div>
+            </div>
 
             <div id="calls-panel" class="side-panel hidden">
                 <div class="calls-header">
@@ -167,9 +351,12 @@
 
                 <div class="calls-favs">
                     <h3>Favourites</h3>
-                    <div class="add-fav">
+                    <div class="add-fav" id="addFavouriteBtn">
                         <i class="fa-solid fa-user-plus"></i>
                         <h4>Add favourite</h4>
+                    </div>
+
+                    <div class="favourite-list" id="favouriteList">
                     </div>
                     <hr>
                 </div>
@@ -177,41 +364,81 @@
                 <p class="recent-">Recent</p>
 
                 <div class="call-list">
+                </div>
+            </div>
 
-                    <div class="call-item">
-                        <img src="https://i.pravatar.cc/100?img=10">
+            <div id="callModal" class="call-modal hidden">
+                <div class="call-top">
+                    <h3 id="callUserName">Calling...</h3>
+                    <p id="callStatus">Ringing...</p>
+                    <div id="callLiveTimer">00:00</div>
+                </div>
 
-                        <div class="call-info">
-                            <h4>Rahul Sharma</h4>
-
-                            <p class="missed">
-                                <i class="fa-solid fa-arrow-down"></i>
-                                Missed voice call
-                            </p>
+                <div class="call-display-area">
+                    <div id="voiceCallDisplay" class="voice-display">
+                        <div class="avatar-wrapper">
+                            <img id="voiceCallAvatar" src="img/default-avatar.svg" alt="User Avatar">
+                            <div class="pulse-wave"></div>
                         </div>
+                    </div>
 
-                        <div class="call-action">
+                    <div id="videoContainer" class="video-container hidden">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <video id="localVideo" autoplay muted playsinline></video>
+                    </div>
+                </div>
+
+                <div class="call-controls">
+                    <button id="speakerBtn" title="Speaker">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button id="muteBtn" title="Mute Microphone">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <button id="cameraBtn" title="Toggle Camera">
+                        <i class="fa-solid fa-video"></i>
+                    </button>
+                    <button id="endCallBtn" class="btn-danger" title="End Call">
+                        <i class="fa-solid fa-phone-slash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="incomingCallModal" class="incoming-modal hidden">
+                <div class="incoming-box">
+                    <div class="incoming-avatar-container">
+                        <h3 id="incomingUserName">Incoming Call</h3>
+                        <p class="incoming-type-text">WhatsApp Voice Call</p>
+                        <img id="incomingUserImage" src="img/default-avatar.svg" alt="Caller Avatar">
+                    </div>
+
+
+                    <div class="incoming-buttons">
+                        <button id="rejectCallBtn" class="btn-decline" title="Decline">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button id="acceptCallBtn" class="btn-accept" title="Accept">
                             <i class="fa-solid fa-phone"></i>
-                        </div>
+                        </button>
                     </div>
+                </div>
+            </div>
 
-                    <div class="call-item">
-                        <img src="https://i.pravatar.cc/100?img=12">
+            <div id="call-contact-panel" class="side-panel hidden">
 
-                        <div class="call-info">
-                            <h4>Priya Patel</h4>
-
-                            <p>
-                                <i class="fa-solid fa-arrow-up"></i>
-                                Outgoing video call
-                            </p>
-                        </div>
-
-                        <div class="call-action">
-                            <i class="fa-solid fa-video"></i>
-                        </div>
+                <div class="call-contact-panel-top">
+                    <div id="callBackBtn">
+                        <i class="fa-solid fa-arrow-left"></i>
                     </div>
+                    <h3>Select Contact</h3>
+                </div>
 
+                <div class="search-box">
+                    <i class="fa-brands fa-sistrix"></i>
+                    <input type="text" id="call-contact-panel-search" placeholder="Search contact to call">
+                </div>
+
+                <div id="call-contact-list" class="call-list">
                 </div>
             </div>
 
@@ -225,7 +452,24 @@
                             <input type="file" id="statusInput" hidden>
                         </div>
 
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                        <div class="status-menu-wrapper">
+
+                            <i class="fa-solid fa-ellipsis-vertical" id="statusMenu"></i>
+
+                            <span class="status-tooltip">
+                                Status menu
+                            </span>
+
+                            <div class="status-dropdown" id="statusDropdown">
+
+                                <button id="statusPrivacyBtn">
+                                    <i class="fa-solid fa-user-lock"></i>
+                                    Status Privacy
+                                </button>
+
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -265,9 +509,8 @@
                         <div>
                             <h4 id="viewerUsername"></h4>
                             <p id="viewerTime"></p>
+
                         </div>
-
-
                     </div>
 
                     <div class="status-actions">
@@ -291,19 +534,20 @@
                         </p>
                     </div>
 
-                    <!-- My Status -->
                     <div class="status-owner-box">
 
                         <div class="status-view-count">
                             <i class="fa-regular fa-eye"></i>
+                            <span id="viewCountText"></span>
+                        </div>
 
-                            <span id="viewCountText">
-                            </span>
+                        <div class="status-like-owner">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="likeCountText"></span>
                         </div>
 
                     </div>
 
-                    <!-- Viewer Reply -->
                     <div class="status-reply-box">
 
                         <input type="text" id="replyInput" placeholder="Type a reply...">
@@ -311,6 +555,8 @@
                         <button id="sendReplyBtn">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
+
+                        <button id="likeStatusBtn"></button>
 
                     </div>
 
@@ -331,7 +577,20 @@
 
                 </div>
 
+                <div class="status-likes-popup hidden">
+
+                    <div class="status-views-header">
+                        <h3 id="likePopupCount"></h3>
+
+                        <i class="fa-solid fa-xmark close-likes"></i>
+                    </div>
+
+                    <div class="status-likes-list"></div>
+
+                </div>
+
             </div>
+
             <div class="status-preview hidden">
 
                 <div class="preview-top">
@@ -356,6 +615,39 @@
                     </button>
 
                 </div>
+
+            </div>
+
+            <div id="status-privacy-panel" class="side-panel hidden">
+
+                <div class="panel-header">
+                    <button id="backStatusPrivacy">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+
+                    <h2>Status Privacy</h2>
+                </div>
+
+                <div class="privacy-option">
+                    <input type="radio" name="privacy" value="my_contacts" checked>
+                    <span>My Contacts</span>
+                </div>
+
+                <div class="privacy-option">
+                    <input type="radio" name="privacy" value="my_contacts_except">
+                    <span>My Contacts Except...</span>
+                </div>
+
+                <div class="privacy-option">
+                    <input type="radio" name="privacy" value="only_share_with">
+                    <span>Only Share With...</span>
+                </div>
+
+                <div id="privacyContacts"></div>
+
+                <button id="savePrivacyBtn">
+                    Save
+                </button>
 
             </div>
 
@@ -425,7 +717,6 @@
 
             </div>
 
-
             <div id="communities-panel" class="side-panel hidden">
 
                 <div class="panel-top">
@@ -466,7 +757,6 @@
 
             </div>
 
-
             <div id="archived-panel" class="side-panel hidden">
 
                 <div class="panel-top">
@@ -499,7 +789,6 @@
 
             </div>
 
-
             <div id="meta-panel" class="side-panel hidden">
 
                 <div class="panel-top">
@@ -525,27 +814,23 @@
             </div>
 
             <div id="media-panel" class="side-panel hidden">
-
                 <div class="panel-top">
                     <h1>Media</h1>
-
                     <div class="panel-icons">
-                        <i class="fa-solid fa-images"></i>
+                        <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
                 </div>
 
-                <div class="media-gallery">
-
-                    <img src="img/default-avatar.svg">
-                    <img src="img/default-avatar.svg">
-                    <img src="img/default-avatar.svg">
-                    <img src="img/default-avatar.svg">
-                    <img src="img/default-avatar.svg">
-
+                <div class="media-tabs">
+                    <button class="media-tab active" data-tab="media">Media</button>
+                    <button class="media-tab" data-tab="docs">Docs</button>
+                    <button class="media-tab" data-tab="links">Links</button>
                 </div>
 
+                <div class="media-gallery-container">
+                    <div id="media-gallery-content"></div>
+                </div>
             </div>
-
             <!-- panel-sections -->
 
             <div id="profile-panel" class="hidden">
@@ -674,19 +959,19 @@
 
                 <div class="chat-actions">
                     <span>
-                        <i class="fa-solid fa-video"></i>
+                        <i id="videoCallBtn" class="fa-solid fa-video"></i>
                         <span>Video Call</span>
                     </span>
                     <span>
-                        <i class="fa-solid fa-phone"></i>
+                        <i id="voiceCallBtn" class="fa-solid fa-phone"></i>
                         <span>Voice Call</span>
                     </span>
                     <span>
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i id="searchCallBtn" class="fa-solid fa-magnifying-glass"></i>
                         <span>Search</span>
                     </span>
                     <span>
-                        <i class="fa-solid fa-ellipsis-v"></i>
+                        <i id="menuCallBtn" class="fa-solid fa-ellipsis-v"></i>
                         <span>Menu</span>
                     </span>
                 </div>
@@ -711,22 +996,184 @@
                 </div>
             </div>
 
+            <div id="replyPreviewBar" class="reply-preview hidden">
+
+                <div class="reply-left-line"></div>
+
+                <div class="reply-preview-content">
+
+                    <div id="replySenderName" class="reply-sender">
+                        User
+                    </div>
+
+                    <div id="replyMessageText" class="reply-text">
+                        Message
+                    </div>
+
+                </div>
+
+                <button id="cancelReplyBtn" class="reply-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+            </div>
+
+            <div id="forwardPanel" class="forward-modal hidden">
+
+                <div class="forward-box">
+
+                    <div class="forward-header">
+
+                        <div class="forward-close" onclick="closeForwardModal()">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </div>
+
+                        <div class="forward-title">
+                            Forward to...
+                            <small>Select contact</small>
+                        </div>
+
+                    </div>
+
+                    <div class="forward-search">
+                        <input type="text" id="forwardSearch" placeholder="Search...">
+                    </div>
+
+                    <div id="forwardChatList" class="forward-chat-list">
+                    </div>
+
+                    <div class="forward-footer">
+
+                        <button id="sendForwardBtn" class="forward-btn send">
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <div class="message-input">
+                <button id="attachBtn">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+                <button id="emojiBtn" type="button">
+                    <i class="fa-regular fa-face-smile"></i>
+                </button>
+
+                <div id="inputEmojiTray" class="input-emoji-tray"></div>
+
+                <div id="attachmentMenu" class="attachment-menu hidden">
+
+                    <div class="attachment-item" data-type="document">
+                        <i class="fa-solid fa-file"></i>
+                        <span>Document & Files</span>
+                    </div>
+
+                    <div class="attachment-item" data-type="image">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photos & Videos</span>
+                    </div>
+
+                    <div class="attachment-item" data-type="camera">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Camera</span>
+                    </div>
+
+                    <div class="attachment-item" data-type="audio">
+                        <i class="fa-solid fa-headphones"></i>
+                        <span>Audio</span>
+                    </div>
+
+                </div>
+
+                <input type="file" id="fileInput" hidden>
+                <input type="file" id="mediaInput" hidden>
+
                 <input type="text" placeholder="Type a message" id="message-input">
                 <button id="send-message">Send</button>
             </div>
 
             <div id="messageMenu" class="message-menu hidden">
-                <div class="menu-item" id="deleteMeBtn">
-                    Delete for me
+                <div class="menu-quick-reactions-row">
+                    <button type="button" class="menu-emoji-opt" data-emoji="👍">👍</button>
+                    <button type="button" class="menu-emoji-opt" data-emoji="❤️">❤️</button>
+                    <button type="button" class="menu-emoji-opt" data-emoji="😂">😂</button>
+                    <button type="button" class="menu-emoji-opt" data-emoji="😮">😮</button>
+                    <button type="button" class="menu-emoji-opt" data-emoji="😢">😢</button>
+                    <button type="button" class="menu-emoji-opt" data-emoji="🙏">🙏</button>
                 </div>
 
-                <div class="menu-item" id="deleteEveryoneBtn">
-                    Delete for everyone
+                <div class="context-menu-divider"></div>
+
+                <div class="menu-item" id="replyMsgBtn">
+                    <i class="fa-solid fa-reply"></i> Reply
                 </div>
 
                 <div class="menu-item" id="copyMsgBtn">
-                    Copy message
+                    <i class="fa-solid fa-copy"></i> Copy message
+                </div>
+
+                <div class="menu-item" id="forwardMsgBtn">
+                    <i class="fa-solid fa-share"></i> Forward message
+                </div>
+
+                <div class="menu-item" id="starMsgBtn">
+                    <i class="fa-solid fa-star"></i> Star message
+                </div>
+
+                <div class="context-menu-divider"></div>
+
+                <div class="menu-item" id="deleteMeBtn">
+                    <i class="fa-solid fa-trash-can"></i> Delete for me
+                </div>
+
+                <div class="menu-item" id="deleteEveryoneBtn">
+                    <i class="fa-solid fa-trash-arrow-up"></i> Delete for everyone
+                </div>
+            </div>
+
+            <div id="mediaLightboxModal" class="wa-lightbox-modal hidden">
+                <div class="wa-lightbox-header">
+                    <div class="wa-lightbox-meta">
+                        <img id="lightboxUserAvatar" src="img/default-avatar.svg" class="meta-avatar" alt="">
+                        <div class="meta-text">
+                            <h4 id="lightboxSenderName">User</h4>
+                            <span id="lightboxTimestamp">Date & Time</span>
+                        </div>
+                    </div>
+                    <div class="wa-lightbox-actions">
+                        <button id="lightboxDownloadBtn" title="Download file">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </button>
+                        <button id="closeLightboxBtn" class="close-gallery-btn" title="Close panel">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="wa-gallery-viewport">
+                    <button class="nav-arrow-btn arrowleft" id="prevMediaBtn">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <div class="chat-media-wrapper-centered">
+                        <img id="globalLightboxImage" class="hidden" src="" alt="View Large Attachment">
+                        <video id="globalLightboxVideo" class="hidden" controls playsinline></video>
+                    </div>
+
+                    <button class="nav-arrow-btn arrowright" id="nextMediaBtn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="wa-gallery-footer-panel">
+                    <div class="gallery-thumbnail-strip" id="galleryThumbnailStrip">
+                    </div>
                 </div>
             </div>
 
@@ -751,12 +1198,12 @@
                                 <span>Search</span>
                             </div>
 
-                            <div class="action-box">
+                            <div class="action-box" id="actVideoCallBtn">
                                 <i class="fa-solid fa-video"></i>
                                 <span>Video</span>
                             </div>
 
-                            <div class="action-box">
+                            <div class="action-box" id="actVoiceCallBtn">
                                 <i class="fa-solid fa-phone"></i>
                                 <span>Voice</span>
                             </div>
@@ -773,13 +1220,10 @@
                     <div class="section">
                         <div class="media-top">
                             <span>Media, links and docs</span>
-                            <span>9</span>
+                            <span>0</span>
                         </div>
 
                         <div class="media-grid">
-                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
-                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
-                            <div class="media-item"><i class="fa-solid fa-download"></i></div>
                             <div class="media-item"><i class="fa-solid fa-download"></i></div>
                         </div>
                     </div>
@@ -844,7 +1288,7 @@
                     </div>
 
                     <div class="section">
-                        <div class="opt"><i class="fa-regular fa-heart"></i> Add to favourites</div>
+                        <div class="opt"><i class="fa-regular fa-heart" id="profileAddFav"></i> Add to favourites</div>
                         <div class="opt danger"><i class="fa-solid fa-ban"></i> Clear chat</div>
                         <div class="opt danger"><i class="fa-solid fa-trash"></i> Delete chat</div>
                     </div>
@@ -886,10 +1330,7 @@
                 <img id="previewImg" src="">
             </div>
 
-
         </main>
-
-
     </div>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="script.js"></script>

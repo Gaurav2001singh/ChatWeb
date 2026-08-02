@@ -7,12 +7,8 @@ exports.createStatus = async (req, res) => {
 
     try {
 
-        const {
-            userId,
-            mediaUrl,
-            caption,
-            type
-        } = req.body;
+        const userId = req.user.id || req.user.UserId;
+        const { mediaUrl, caption, type } = req.body;
 
         await statusModel.createStatus(
             userId,
@@ -40,7 +36,7 @@ exports.getStatuses = async (req, res) => {
     try {
 
 
-        const userId = req.query.userId;
+        const userId = req.user.id || req.user.UserId;
 
         const result =
             await statusModel.getStatuses(userId);
@@ -209,4 +205,44 @@ exports.createStatusReply = async (req, res) => {
             error: "Server Error"
         });
     }
-}
+};
+
+exports.toggleLike = async (req, res) => {
+    try {
+        const { statusId } = req.body;
+        const userId = req.user.id;
+
+        const result = await statusModel.toggleLike(statusId, userId);
+
+        res.json(result);
+    } catch (error) {
+        console.error("LIKE ERROR:", error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+exports.getStatusLikes = async (req, res) => {
+    try {
+
+        const statusId = req.params.id;
+        const userId = req.user.id;
+
+        const likes =
+            await statusModel.getStatusLikes(
+                statusId,
+                userId
+            );
+
+        res.json(likes);
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};

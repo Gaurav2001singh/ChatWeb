@@ -3,10 +3,13 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+const path = require("path");
 
 const { connectDB, sql } = require("./config/db");
 const { log } = require("console");
 const contactRoutes = require("./routes/contactRoutes");
+const statusPrivacyRoutes = require("./routes/statusPrivacyRoutes");
+const mediaRoutes = require("./routes/mediaRoutes");
 
 const onlineUsers = require("./utils/onlineUsers");
 const activeChats = require("./utils/activeChats");
@@ -23,13 +26,16 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/chat", require("./routes/chatRoutes"));
 app.use("/api/status", require("./routes/statusRoutes"));
 app.use("/api/upload", require("./routes/uploadRoutes"));
 app.use("/api/user", require("./routes/userRoutes"));
+app.use("/api/calls", require("./routes/callRoutes"));
 app.use("/api/contact", contactRoutes);
+app.use("/api/status", statusPrivacyRoutes);
+app.use("/api/media", mediaRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server is working");
@@ -50,6 +56,7 @@ io.on("connection", (socket) => {
 
         try {
 
+            socket.join(String(userId));
             socket.userId = userId;
 
             onlineUsers[userId] = socket.id;
@@ -102,6 +109,7 @@ io.on("connection", (socket) => {
             });
 
             io.emit("chat_list_update");
+            io.emit("call_list_update");
 
             console.log("Online Users:", onlineUsers);
 
@@ -110,6 +118,104 @@ io.on("connection", (socket) => {
             console.log("Register Error:", error);
         }
     });
+
+    socket.on("call-user", async (data) => {
+        const { callerId, receiverId, offer, callType, callId, callerName, callerImage } = data;
+
+        const receiverSocketid = onlineUsers[receiverId];
+        if (!receiverSocketid) {
+            return;
+        }
+        try {
+            const userQuery = await sql.query`
+                SELECT Username, ProfilePicture FROM Users WHERE Id = ${callerId}
+            `;
+            const caller = userQuery.recordset[0];
+
+            let correctedImage = null;
+            let correctedName = "Incoming Call";
+
+            if (caller) {
+                correctedName = caller.Username;
+                correctedImage = caller.ProfilePicture;
+
+                if (correctedImage && correctedImage.startsWith("/uploads/") && !correctedImage.includes("/profile_pictures/")) {
+                    correctedImage = correctedImage.replace("/uploads/", "/uploads/profile_pictures/");
+                }
+            }
+
+            io.to(receiverSocketid).emit("incoming-call", {
+                callerId,
+                offer,
+                callType,
+                callId,
+                callerName: correctedName,
+                callerImage: correctedImage
+            });
+
+        } catch (error) {
+            console.error("Error broadcasting incoming call parameters:", error);
+        }
+    });
+
+    socket.on("answer-call", (data) => {
+        const { callerId, answer } = data;
+
+        const callerSocketId = onlineUsers[callerId];
+        if (!callerSocketId) {
+            return;
+        }
+
+        io.to(callerSocketId).emit("call-accepted", {
+            answer
+        });
+    });
+
+    socket.on("ice-candidate", (data) => {
+        const { receiverId, candidate } = data;
+
+        const receiverSocketid = onlineUsers[receiverId];
+
+        if (!receiverSocketid) {
+            return;
+        }
+
+        io.to(receiverSocketid).emit("ice-candidate", {
+            candidate
+        });
+    });
+
+
+    socket.on("missed-call", (data) => {
+        const callerSocketId = onlineUsers[data.callerId];
+
+        if (!callerSocketId)
+            return;
+
+        io.to(callerSocketId)
+            .emit("call-missed");
+    })
+
+    socket.on("end-call", (data) => {
+
+        const receiverSocketId = onlineUsers[data.receiverId];
+
+        if (receiverSocketId) {
+
+            io.to(receiverSocketId)
+                .emit("call-ended");
+        }
+
+    });
+
+    socket.on("reject-call", (data) => {
+        const callerSocketId = onlineUsers[data.callerId];
+        if (!callerSocketId)
+            return;
+
+        io.to(callerSocketId).emit("call-rejected");
+    });
+
 
     socket.on("join_chat", ({ chatId, userId }) => {
 
@@ -191,7 +297,11 @@ io.on("connection", (socket) => {
             const {
                 chatId,
                 message,
-                senderId
+                senderId,
+                messageType,
+                mediaUrl,
+                duration,
+                replyToMsgId
             } = data;
 
             const members = await sql.query`
@@ -219,8 +329,12 @@ io.on("connection", (socket) => {
                 ChatId,
                 SenderId,
                 MessageText,
+                MessageType,
+                MediaUrl,
+                Duration,
                 IsDelivered,
-                IsSeen
+                IsSeen,
+                ReplyToMsgId
 
             )
 
@@ -228,70 +342,94 @@ io.on("connection", (socket) => {
                 INSERTED.Id,
                 INSERTED.CreatedAt,
                 INSERTED.IsDelivered,
-                INSERTED.IsSeen
+                INSERTED.IsSeen,
+                INSERTED.Duration,
+                INSERTED.ReplyToMsgId
 
             VALUES (
 
                 ${chatId},
                 ${senderId},
                 ${message},
+                ${messageType || 'text'},
+                ${mediaUrl},
+                ${duration || null},
                 ${receiverOnline ? 1 : 0},
-                ${receiverInSameChat ? 1 : 0}
+                ${receiverInSameChat ? 1 : 0},
+                ${replyToMsgId || null}
             )
         `;
 
             const msg =
                 insertedMessage.recordset[0];
 
-            io.to(String(chatId))
-                .emit("receive_message", {
+            const fullMessage = await sql.query`
+    SELECT
+        m.*,
+        
+        -- Get Sender's Display Name
+        ISNULL(ct.ContactName, ISNULL(NULLIF(su.Username, ''), su.PhoneNumber)) AS SenderName,
+        su.ProfilePicture AS SenderProfilePicture,
 
-                    messageId: msg.Id,
+        CASE
+            WHEN rm.DeletedForEveryone = 1 THEN 'This message was deleted'
+            ELSE rm.MessageText
+        END AS ReplyMessage,
+        
+        ru.Username AS ReplySenderName
 
-                    chatId,
+    FROM Messages m
+    JOIN Users su ON su.Id = m.SenderId
+    LEFT JOIN Contacts ct ON ct.ContactUserId = su.Id AND ct.UserId = ${receiverId}
+    LEFT JOIN Messages rm ON rm.Id = m.ReplyToMsgId
+    LEFT JOIN Users ru ON ru.Id = rm.SenderId
+    WHERE m.Id = ${msg.Id}
+`;
 
-                    message,
+            const messageData = fullMessage.recordset[0];
 
-                    senderId,
+            const payload = {
+                ...messageData,
+                messageId: msg.Id,
+                chatId,
+                senderId,
+                senderName: messageData.SenderName || "User",
+                senderAvatar: messageData.SenderProfilePicture,
+                messageText: messageData.MessageText,
+                duration: msg.Duration,
+                isStatusReply: data.isStatusReply || (messageType === "status_reply" || !!data.statusId),
+                statusUsername: data.statusUsername || "",
+                StatusCaption: data.statusCaption || data.Caption || "Photo",
+                statusId: data.statusId || null,
+                StatusOwnerId: data.StatusOwnerId || null,
+                ReplyToMsgId: msg.ReplyToMsgId,
+                time: msg.CreatedAt,
+                isDelivered: msg.IsDelivered,
+                isSeen: msg.IsSeen
+            };
 
-                    isStatusReply: msg.isStatusReply,
+            // 1. Emit to the active chat room (for open windows)
+            io.to(String(chatId)).emit("receive_message", payload);
 
-                    statusUsername: msg.statusUsername,
+            // 2. FIX: Emit directly to receiver's personal room (for notifications when chat isn't opened)
+            if (receiverId) {
+                io.to(String(receiverId)).emit("receive_message", payload);
+            }
 
-                    StatusCaption: msg.Caption,
-
-                    statusId: msg.statusId,
-
-                    time: msg.CreatedAt,
-
-                    isDelivered: msg.IsDelivered,
-
-                    isSeen: msg.IsSeen
-                });
-
-            const receiverSocketId =
-                onlineUsers[receiverId];
-
+            // 3. Update sidebar for receiver
+            const receiverSocketId = onlineUsers[receiverId];
             if (receiverSocketId) {
-
-                io.to(receiverSocketId)
-                    .emit("chat_list_update");
+                io.to(receiverSocketId).emit("chat_list_update");
             }
 
+            // 4. Update delivery status
             if (receiverOnline) {
-
-                io.to(String(chatId))
-                    .emit("messages_delivered", {
-                        chatId
-                    });
+                io.to(String(chatId)).emit("messages_delivered", { chatId });
             }
 
+            // 5. Update seen status
             if (receiverInSameChat) {
-
-                io.to(String(chatId))
-                    .emit("messages_seen", {
-                        chatId
-                    });
+                io.to(String(chatId)).emit("messages_seen", { chatId });
             }
 
         } catch (error) {
@@ -301,6 +439,162 @@ io.on("connection", (socket) => {
                 error
             );
         }
+    });
+
+    socket.on("message_reaction", async (data) => {
+        try {
+            const { messageId, emoji, chatId } = data;
+
+            const targetReactionValue = emoji === 'REMOVE' ? null : emoji;
+
+            await sql.query`
+                UPDATE Messages
+                SET Reaction = ${targetReactionValue}
+                WHERE Id = ${messageId}
+            `;
+
+            io.to(String(chatId)).emit("message_reaction_updated", {
+                messageId: Number(messageId),
+                emoji: targetReactionValue,
+                chatId: Number(chatId)
+            });
+
+        } catch (error) {
+            console.error("Failed to commit and broadcast message reaction updates:", error);
+        }
+    });
+
+    socket.on("forward_message", async (data) => {
+
+        try {
+
+            const original = await sql.query`
+
+            SELECT *
+
+            FROM Messages
+
+            WHERE Id=${data.messageId}
+
+        `;
+
+            if (!original.recordset.length) return;
+
+            const msg = original.recordset[0];
+
+            for (const chatId of data.targetChats) {
+
+                const receiver = await sql.query`
+
+                SELECT TOP 1 UserId
+                FROM ChatMembers
+                WHERE ChatId = ${chatId}
+                AND UserId != ${data.senderId}
+
+                `;
+
+                const receiverId = receiver.recordset[0]?.UserId ?? null;
+
+                const delivered =
+                    receiverId && onlineUsers[receiverId]
+                        ? 1
+                        : 0;
+
+                const inserted = await sql.query`
+
+                INSERT INTO Messages(
+
+                    ChatId,
+                    SenderId,
+                    MessageText,
+                    MessageType,
+                    MediaUrl,
+                    Duration,
+                    IsForwarded,
+                    ForwardedFromMessageId,
+                    IsDelivered,
+                    IsSeen
+
+                )
+
+                OUTPUT INSERTED.*
+
+                VALUES(
+
+                    ${chatId},
+                    ${data.senderId},
+                    ${msg.MessageText},
+                    ${msg.MessageType},
+                    ${msg.MediaUrl},
+                    ${msg.Duration},
+                    1,
+                    ${msg.Id},
+                    ${delivered},
+                    0
+
+                )
+
+            `;
+                const newMsg = inserted.recordset[0];
+
+                io.to(String(chatId)).emit("receive_message", {
+                    ...newMsg,
+                    messageId: newMsg.Id,
+                    chatId: newMsg.ChatId,
+                    senderId: newMsg.SenderId,
+                    message: newMsg.MessageText,
+                    messageType: newMsg.MessageType,
+                    mediaUrl: newMsg.MediaUrl,
+                    duration: newMsg.Duration,
+                    time: newMsg.CreatedAt,
+                    isForwarded: newMsg.IsForwarded,
+                    forwardedFromMessageId: newMsg.ForwardedFromMessageId,
+                    isDelivered: newMsg.isDelivered,
+                    isSeen: newMsg.isSeen
+
+                });
+
+                if (delivered) {
+
+                    await sql.query`
+
+                        UPDATE Messages
+                        SET IsDelivered = 1
+                        WHERE Id = ${newMsg.Id}
+
+                    `;
+
+                    io.to(String(data.senderId)).emit("messages_delivered_global", {
+                        userId: receiverId
+                    });
+
+                }
+
+                const members = await sql.query`
+
+                    SELECT UserId
+                    FROM ChatMembers
+                    WHERE ChatId=${chatId}
+
+                    `;
+
+                for (const member of members.recordset) {
+
+                    io.to(String(member.UserId))
+                        .emit("chat_list_update");
+
+                }
+
+
+            }
+
+        }
+        catch (err) {
+
+            console.log(err);
+
+        }
+
     });
 
     socket.on("seen_messages", async (data) => {
@@ -320,6 +614,12 @@ io.on("connection", (socket) => {
                 AND IsSeen = 0
             `;
 
+            await sql.query`
+                DELETE FROM UnreadChats
+                WHERE ChatId = ${chatId}
+                AND UserId = ${viewerUserId}
+            `;
+
             io.to(String(chatId))
                 .emit("messages_seen", {
                     chatId
@@ -330,6 +630,12 @@ io.on("connection", (socket) => {
                 FROM ChatMembers
                 WHERE ChatId = ${chatId}
             `;
+
+            for (const member of members.recordset) {
+
+                io.to(String(member.UserId)).emit("chat_list_update");
+
+            }
 
             members.recordset.forEach(member => {
 

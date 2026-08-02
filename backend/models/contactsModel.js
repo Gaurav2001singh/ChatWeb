@@ -64,7 +64,8 @@ exports.getContacts = async (userId) => {
             u.Username,
             u.PhoneNumber,
             u.ProfilePicture,
-            u.LastSeen
+            u.LastSeen,
+            u.About
 
         FROM Contacts c
 

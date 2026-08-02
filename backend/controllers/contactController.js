@@ -1,4 +1,4 @@
-const contactModel = require("../models/contactsModal");
+const contactModel = require("../models/contactsModel");
 
 exports.addContact = async (req, res) => {
 

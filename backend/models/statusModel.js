@@ -26,25 +26,23 @@ exports.createStatus = async (
 };
 
 exports.getStatuses = async (userId) => {
-
     return await sql.query`
-
         SELECT
-
             s.Id,
             s.UserId,
             s.MediaUrl,
             s.Caption,
             s.Type,
-
             CONVERT(VARCHAR, s.CreatedAt, 126) AS CreatedAt,
 
-            ISNULL(
-                c.ContactName,
-                u.PhoneNumber
-            ) AS ContactName,
+            -- Fetch saved Contact Name -> fallback to Username -> fallback to Phone Number
+            CASE
+                WHEN u.Id = ${userId} THEN 'My Status'
+                ELSE ISNULL(c.ContactName, ISNULL(NULLIF(u.Username, ''), u.PhoneNumber))
+            END AS ContactName,
 
             u.Username,
+            u.PhoneNumber,
             u.ProfilePicture,
 
             (
@@ -55,47 +53,88 @@ exports.getStatuses = async (userId) => {
 
             CASE
                 WHEN EXISTS(
-                    SELECT 1
-                    FROM StatusViews sv
-                    WHERE sv.StatusId = s.Id
-                    AND sv.ViewerId = ${userId}
-                )
-                THEN 1
-                ELSE 0
-            END AS IsViewed
-
-        FROM Status s
-
-        JOIN Users u
-        ON s.UserId = u.Id
-        LEFT JOIN Contacts c
-        ON c.ContactUserId = u.Id
-        AND c.UserId = ${userId}
-
-        WHERE s.ExpireAt > GETDATE()
-
-        AND
+                    SELECT 1 FROM StatusViews sv
+                    WHERE sv.StatusId = s.Id AND sv.ViewerId = ${userId}
+                ) THEN 1 ELSE 0
+            END AS IsViewed,
 
             (
-                s.UserId = ${userId}
+                SELECT COUNT(*)
+                FROM StatusLikes sl
+                WHERE sl.StatusId = s.Id
+            ) AS LikeCount,
 
-                OR
+            CASE
+                WHEN EXISTS(
+                    SELECT 1 FROM StatusLikes sl
+                    WHERE sl.StatusId = s.Id AND sl.UserId = ${userId}
+                ) THEN 1 ELSE 0
+            END AS IsLiked
 
+        FROM Status s
+        JOIN Users u ON s.UserId = u.Id
+
+        -- Left Join to resolve contact names saved by the viewer (${userId})
+        LEFT JOIN Contacts c 
+        ON c.ContactUserId = u.Id AND c.UserId = ${userId}
+
+        WHERE s.ExpireAt > GETDATE()
+        AND (
+            -- Rule 1: Always include own statuses
+            s.UserId = ${userId}
+
+            OR
+
+            -- Rule 2: "Only Share With..." (Explicit user inclusion list)
+            (
                 EXISTS (
-
-                    SELECT 1
-
-                    FROM Contacts c1
-
-                    JOIN Contacts c2
-                    ON c1.UserId = c2.ContactUserId
-                    AND c1.ContactUserId = c2.UserId
-
-                    WHERE c1.UserId = ${userId}
-                    AND c1.ContactUserId = s.UserId
+                    SELECT 1 FROM StatusPrivacy sp
+                    WHERE sp.UserId = s.UserId AND sp.PrivacyType = 'only_share_with'
+                )
+                AND EXISTS (
+                    SELECT 1 FROM StatusPrivacyMembers spm
+                    WHERE spm.UserId = s.UserId AND spm.ContactUserId = ${userId}
                 )
             )
 
+            OR
+
+            -- Rule 3: Mutual Contact Requirement (Poster saved Viewer AND Viewer saved Poster)
+            (
+                EXISTS (
+                    SELECT 1 FROM Contacts
+                    WHERE UserId = s.UserId AND ContactUserId = ${userId}
+                )
+                AND EXISTS (
+                    SELECT 1 FROM Contacts
+                    WHERE UserId = ${userId} AND ContactUserId = s.UserId
+                )
+                AND (
+                    -- Sub-clause A: Default (No privacy configured defaults to My Contacts)
+                    NOT EXISTS (
+                        SELECT 1 FROM StatusPrivacy sp WHERE sp.UserId = s.UserId
+                    )
+                    OR
+                    -- Sub-clause B: "My Contacts" explicitly set
+                    EXISTS (
+                        SELECT 1 FROM StatusPrivacy sp
+                        WHERE sp.UserId = s.UserId AND sp.PrivacyType = 'my_contacts'
+                    )
+                    OR
+                    -- Sub-clause C: "My Contacts Except..." (Viewer must NOT be in the excluded list)
+                    (
+                        EXISTS (
+                            SELECT 1 FROM StatusPrivacy sp
+                            WHERE sp.UserId = s.UserId AND sp.PrivacyType = 'my_contacts_except'
+                        )
+                        AND NOT EXISTS (
+                            SELECT 1 FROM StatusPrivacyMembers spm
+                            WHERE spm.UserId = s.UserId AND spm.ContactUserId = ${userId}
+                        )
+                    )
+                )
+            )
+        )
         ORDER BY s.CreatedAt DESC
     `;
 };
@@ -351,4 +390,70 @@ exports.createStatusReply = async (statusId, senderId, message) => {
 
         statusId
     };
-}
+};
+
+exports.toggleLike = async (statusId, userId) => {
+    const existing = await sql.query`
+        SELECT * FROM StatusLikes
+        WHERE StatusId = ${statusId}
+        AND UserId = ${userId}
+    `;
+
+    if (existing.recordset.length > 0) {
+        await sql.query`
+            DELETE FROM StatusLikes
+            WHERE StatusId = ${statusId}
+            AND UserId = ${userId}
+        `;
+        return {
+            liked: false
+        };
+    }
+
+    await sql.query`
+        INSERT INTO StatusLikes (
+            StatusId,
+            UserId
+        )
+        VALUES (
+            ${statusId},
+            ${userId}
+        )
+    `;
+
+    return {
+        liked: true
+    };
+};
+
+exports.getStatusLikes = async (statusId, userId) => {
+    const result = await sql.query`
+
+        SELECT
+
+            u.Id,
+            u.Username,
+            u.PhoneNumber,
+            u.ProfilePicture,
+
+            ISNULL(
+                c.ContactName,
+                u.PhoneNumber
+            ) AS ContactName
+
+        FROM StatusLikes sl
+
+        JOIN Users u
+        ON sl.UserId = u.Id
+
+        LEFT JOIN Contacts c
+        ON c.ContactUserId = u.Id
+        AND c.UserId = ${userId}
+
+        WHERE sl.StatusId = ${statusId}
+
+        ORDER BY sl.Id DESC
+    `;
+
+    return result.recordset;
+};

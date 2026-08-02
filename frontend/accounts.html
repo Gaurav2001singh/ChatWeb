@@ -20,38 +20,26 @@
             height: 100vh;
             overflow: hidden;
             background:
-                radial-gradient(circle at top left,
-                    rgba(37, 211, 102, 0.08),
-                    transparent 30%),
-                radial-gradient(circle at bottom right,
-                    rgba(0, 168, 132, 0.08),
-                    transparent 30%),
+                radial-gradient(circle at top left, rgba(37, 211, 102, 0.08), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(0, 168, 132, 0.08), transparent 30%),
                 #0b141a;
-
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         /* WELCOME SCREEN */
-
         .welcome-screen {
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(circle at top left,
-                    rgba(37, 211, 102, 0.08),
-                    transparent 30%),
-                radial-gradient(circle at bottom right,
-                    rgba(0, 168, 132, 0.08),
-                    transparent 30%),
+                radial-gradient(circle at top left, rgba(37, 211, 102, 0.08), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(0, 168, 132, 0.08), transparent 30%),
                 #0b141a;
-
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-
             transition: 0.7s ease;
         }
 
@@ -65,27 +53,19 @@
             width: 90%;
             max-width: 850px;
             height: 360px;
-
             background: #0b0f13;
-
             border-radius: 20px;
-
             border: 1px solid rgba(255, 255, 255, 0.06);
-
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-
             text-align: center;
-
             padding: 40px;
-
             animation: fadeWelcome 1s ease;
         }
 
         @keyframes fadeWelcome {
-
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -98,7 +78,8 @@
         }
 
         .welcome-logo {
-            width: 50px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             background: #25d366;
             display: flex;
@@ -110,12 +91,12 @@
 
         .welcome-logo i {
             color: white;
-            font-size: 46px;
+            font-size: 36px;
         }
 
         .welcome-card h1 {
             color: white;
-            font-size: 50px;
+            font-size: 42px;
             margin-bottom: 20px;
         }
 
@@ -129,26 +110,19 @@
         .welcome-card button {
             width: 180px;
             height: 52px;
-
             border: none;
             border-radius: 40px;
-
             background: #25d366;
-
             color: #111b21;
-
             font-size: 16px;
             font-weight: 700;
-
             cursor: pointer;
-
             transition: 0.3s;
         }
 
         .welcome-card button:hover {
             transform: translateY(-3px);
             background: #1ebe5d;
-
             box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
         }
 
@@ -163,12 +137,10 @@
             box-shadow:
                 0 10px 40px rgba(0, 0, 0, 0.5),
                 0 0 80px rgba(37, 211, 102, 0.05);
-
             position: relative;
             opacity: 0;
             visibility: hidden;
             transform: scale(0.95);
-
             transition: 0.7s ease;
         }
 
@@ -178,8 +150,7 @@
             transform: scale(1);
         }
 
-        /* LEFT */
-
+        /* LEFT PANEL */
         .left-panel {
             width: 50%;
             background: #111b21;
@@ -253,8 +224,7 @@
             font-size: 18px;
         }
 
-        /* RIGHT */
-
+        /* RIGHT PANEL */
         .right-panel {
             width: 50%;
             background: #202c33;
@@ -302,13 +272,13 @@
 
         .form-content h2 {
             color: white;
-            font-size: 38px;
-            margin-bottom: 10px;
+            font-size: 34px;
+            margin-bottom: 8px;
         }
 
         .sub-text {
             color: #8696a0;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 14px;
         }
 
@@ -347,17 +317,67 @@
             color: #8696a0;
         }
 
-        .file-input {
-            background: #2a3942;
-            border-radius: 14px;
-            padding: 15px;
-            color: #8696a0;
-            margin-bottom: 18px;
+        /* WHATSAPP WHATSAPP INTERACTIVE PREVIEW AVATAR CSS */
+        .avatar-picker-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
         }
 
-        .file-input input {
-            color: white;
+        .whatsapp-avatar-holder {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #2a3942;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px dashed rgba(134, 150, 160, 0.4);
+            transition: 0.3s ease;
+        }
+
+        .whatsapp-avatar-holder:hover {
+            border-color: #25d366;
+            background: #31434e;
+        }
+
+        .whatsapp-avatar-holder img {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(11, 20, 26, 0.65);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: 0.25s ease;
+            color: #e9edef;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .whatsapp-avatar-holder:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-overlay i {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #25d366;
+        }
+
+        .avatar-overlay span {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .auth-btn {
@@ -366,7 +386,7 @@
             border: none;
             border-radius: 40px;
             background: #25d366;
-            color: white;
+            color: #111b21;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -396,8 +416,8 @@
             text-decoration: underline;
         }
 
+        /* RESPONSIVE BREAKPOINTS */
         @media(max-width: 950px) {
-
             body {
                 padding: 15px;
                 height: auto;
@@ -423,7 +443,27 @@
 
             .forms-container {
                 width: 200%;
-                min-height: 700px;
+                min-height: 650px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .left-panel {
+                width: 100%;
+                height: auto;
+                background: #111b21;
+                padding: 40px 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .right-panel {
+                width: 100%;
+                height: auto;
+                background: #202c33;
+                position: relative;
+                overflow: hidden;
             }
         }
     </style>
@@ -433,199 +473,140 @@
     <!-- WELCOME SCREEN -->
 
     <div class="welcome-screen" id="welcomeScreen">
-
         <div class="welcome-card">
-
             <div class="welcome-logo">
                 <i class="fa-brands fa-whatsapp"></i>
             </div>
-
             <h1>Welcome to Chat Web</h1>
-
             <p>
-                Simple, reliable and private.
-                Message privately, make calls and share
+                Simple, reliable and private. Message privately, make calls and share
                 files with your friends, family and colleagues.
             </p>
-
-            <button id="openAuth">
-                Log in
-            </button>
-
+            <button id="openAuth">Agree & Continue</button>
         </div>
-
     </div>
 
     <div class="auth-wrapper">
-
         <div class="left-panel">
-
             <div class="left-content">
-
                 <div class="logo">
                     <i class="fa-brands fa-whatsapp"></i>
                 </div>
-
                 <h1>Chat Securely</h1>
-
                 <p>
-                    Connect with your friends instantly using
-                    real-time messaging, online status,
+                    Connect with your friends instantly using real-time messaging, online status,
                     seen ticks and modern style chat system.
                 </p>
-
                 <div class="features">
-
                     <div class="feature">
                         <i class="fa-solid fa-lock"></i>
                         <span>End-to-end encrypted messaging</span>
                     </div>
-
                     <div class="feature">
                         <i class="fa-solid fa-check-double"></i>
                         <span>Real-time seen and delivered ticks</span>
                     </div>
-
                     <div class="feature">
                         <i class="fa-solid fa-user-group"></i>
                         <span>Private chats with online users</span>
                     </div>
-
                     <div class="feature">
                         <i class="fa-solid fa-bolt"></i>
                         <span>Fast modern chat experience</span>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-        <!-- RIGHT -->
-
         <div class="right-panel">
-
             <div class="forms-container" id="formsContainer">
 
-                <!-- LOGIN -->
-
                 <div class="form-box">
-
                     <div class="form-content">
-
-                        <h2>Login</h2>
-
-                        <p class="sub-text">
-                            Login to continue chatting
-                        </p>
+                        <h2>Enter your number</h2>
+                        <p class="sub-text">Log in to sync your profile updates instantly.</p>
 
                         <form id="loginForm">
-
                             <div class="input-group">
                                 <i class="fa-solid fa-phone"></i>
-
-                                <input type="text" id="loginPhone" placeholder="Phone number">
+                                <input type="text" id="loginPhone" placeholder="Phone number" required>
                             </div>
-
                             <div class="input-group">
                                 <i class="fa-solid fa-lock"></i>
-
-                                <input type="password" id="loginPassword" placeholder="Password">
+                                <input type="password" id="loginPassword" placeholder="OTP Pin OR Password"
+                                    required>
                             </div>
-
-                            <button class="auth-btn" type="submit">
-                                Login
-                            </button>
-
+                            <button class="auth-btn" type="submit">Verify & Log In</button>
                         </form>
 
                         <p class="switch-text">
-                            Don't have an account?
-                            <span id="showRegister">
-                                Register
-                            </span>
+                            First time using Chat Web? <span id="showRegister">Create profile</span>
                         </p>
-
                     </div>
-
                 </div>
 
-                <!-- REGISTER -->
-
                 <div class="form-box">
-
                     <div class="form-content">
-
-                        <h2>Register</h2>
-
-                        <p class="sub-text">
-                            Create your new account
-                        </p>
+                        <h2>Profile Info</h2>
+                        <p class="sub-text">Please provide your name and an optional profile picture.</p>
 
                         <form id="registerForm">
+                            <div class="avatar-picker-wrapper">
+                                <div class="whatsapp-avatar-holder" id="avatarPicker">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                                        alt="Default Avatar" id="avatarImagePreview">
+                                    <div class="avatar-overlay">
+                                        <i class="fa-solid fa-camera"></i>
+                                        <span>Add Photo</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="profilePicture" accept="image/*" hidden>
+                            </div>
 
                             <div class="input-group">
                                 <i class="fa-solid fa-user"></i>
-
-                                <input type="text" id="username" placeholder="Username">
+                                <input type="text" id="username" placeholder="Profile name (e.g., John Doe)" required>
                             </div>
-
                             <div class="input-group">
                                 <i class="fa-solid fa-envelope"></i>
-
-                                <input type="email" id="email" placeholder="Email">
+                                <input type="email" id="email" placeholder="Email address (Optional)">
                             </div>
-
                             <div class="input-group">
                                 <i class="fa-solid fa-phone"></i>
-
-                                <input type="text" id="registerPhone" placeholder="Phone number">
+                                <input type="text" id="registerPhone" placeholder="Confirm phone number" required>
                             </div>
-
                             <div class="input-group">
                                 <i class="fa-solid fa-lock"></i>
-
-                                <input type="password" id="registerPassword" placeholder="Password">
+                                <input type="password" id="registerPassword" placeholder="OTP Pin OR Password"
+                                    required>
                             </div>
-
-                            <div class="file-input">
-                                <input type="file" id="profilePicture">
-                            </div>
-
-                            <button class="auth-btn" type="submit">
-                                Register
-                            </button>
-
+                            <button class="auth-btn" type="submit">Finish Setup</button>
                         </form>
 
                         <p class="switch-text">
-                            Already have an account?
-                            <span id="showLogin">
-                                Login
-                            </span>
+                            Already configured? <span id="showLogin">Log In</span>
                         </p>
-
                     </div>
-
                 </div>
 
             </div>
-
         </div>
-
     </div>
 
     <script>
 
-        const formsContainer =
-            document.getElementById("formsContainer");
+        const formsContainer = document.getElementById("formsContainer");
+        const showRegister = document.getElementById("showRegister");
+        const showLogin = document.getElementById("showLogin");
+        const welcomeScreen = document.getElementById("welcomeScreen");
+        const authWrapper = document.querySelector(".auth-wrapper");
+        const openAuth = document.getElementById("openAuth");
+        const API_BASE_URL = "http://192.168.0.107:5000/api/auth";
 
-        const showRegister =
-            document.getElementById("showRegister");
-
-        const showLogin =
-            document.getElementById("showLogin");
+        openAuth.addEventListener("click", () => {
+            welcomeScreen.classList.add("hide");
+            authWrapper.classList.add("show");
+        });
 
         showRegister.addEventListener("click", () => {
             formsContainer.classList.add("active");
@@ -635,173 +616,109 @@
             formsContainer.classList.remove("active");
         });
 
-        const welcomeScreen =
-            document.getElementById("welcomeScreen");
+        // Interactive Camera Upload Click Routing & Immediate File Previewing Logic
+        const avatarPicker = document.getElementById("avatarPicker");
+        const profilePictureInput = document.getElementById("profilePicture");
+        const avatarImagePreview = document.getElementById("avatarImagePreview");
 
-        const authWrapper =
-            document.querySelector(".auth-wrapper");
-
-        const openAuth =
-            document.getElementById("openAuth");
-
-        openAuth.addEventListener("click", () => {
-
-            welcomeScreen.classList.add("hide");
-
-            authWrapper.classList.add("show");
-
+        avatarPicker.addEventListener("click", () => {
+            profilePictureInput.click();
         });
 
-        /* LOGIN */
-
-        const loginForm =
-            document.getElementById("loginForm");
-
-        loginForm.addEventListener("submit",
-            async (e) => {
-
-                e.preventDefault();
-
-                const number =
-                    document.getElementById("loginPhone").value;
-
-                const password =
-                    document.getElementById("loginPassword").value;
-
-                if (!number || !password) {
-                    alert("Please fill all fields");
-                    return;
+        profilePictureInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    avatarImagePreview.setAttribute('src', e.target.result);
                 }
+                reader.readAsDataURL(file);
+            }
+        });
 
-                try {
+        // --- LOGIN HANDLER ---
+        const loginForm = document.getElementById("loginForm");
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const number = document.getElementById("loginPhone").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
 
-                    const response = await fetch(
-                        "http://localhost:5000/api/auth/login",
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                number,
-                                password
-                            })
-                        }
-                    );
+            if (!number || !password) {
+                alert("Please complete all identification parameters.");
+                return;
+            }
 
-                    const data = await response.json();
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ number, password })
+                });
 
-                    if (response.ok) {
+                const data = await response.json();
 
-                        localStorage.setItem(
-                            "token",
-                            data.token
-                        );
+                if (response.ok) {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userId", data.userId);
+                    localStorage.setItem("profilePicture", data.ProfilePicture || "");
+                    localStorage.setItem("username", data.Username);
 
-                        localStorage.setItem(
-                            "userId",
-                            data.userId
-                        );
-
-                        localStorage.setItem(
-                            "profilePicture",
-                            data.ProfilePicture || ""
-                        );
-
-                        localStorage.setItem(
-                            "username",
-                            data.Username
-                        );
-
-                        setTimeout(() => {
-                            window.location.href = "index.html";
-                        }, 1000)
-
-                    } else {
-                        alert(data.message);
-                    }
-
-                } catch (error) {
-                    console.log(error);
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 800);
+                } else {
+                    alert(data.message || "Authentication details invalid");
                 }
+            } catch (error) {
+                console.error("Login Client Error:", error);
+                alert("Network fault or Server failure occurred.");
+            }
+        });
 
-            });
+        // --- REGISTER HANDLER ---
+        const registerForm = document.getElementById("registerForm");
+        registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        /* REGISTER */
+            const username = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const number = document.getElementById("registerPhone").value.trim();
+            const password = document.getElementById("registerPassword").value.trim();
+            const profileFile = profilePictureInput.files[0];
 
-        const registerForm =
-            document.getElementById("registerForm");
+            if (!username || !number || !password) {
+                alert("Please configure the requested setup criteria.");
+                return;
+            }
 
-        registerForm.addEventListener("submit",
-            async (e) => {
+            const formData = new FormData();
+            formData.append("username", username);
+            formData.append("email", email);
+            formData.append("number", number);
+            formData.append("password", password);
+            if (profileFile) {
+                formData.append("profile", profileFile);
+            }
 
-                e.preventDefault();
+            try {
+                const response = await fetch(`${API_BASE_URL}/register`, {
+                    method: "POST",
+                    body: formData
+                });
 
-                const username =
-                    document.getElementById("username").value;
+                const data = await response.json();
 
-                const email =
-                    document.getElementById("email").value;
-
-                const number =
-                    document.getElementById("registerPhone").value;
-
-                const password =
-                    document.getElementById("registerPassword").value;
-
-                const profilePicture =
-                    document.getElementById("profilePicture").files[0];
-
-                if (!username || !email || !number || !password) {
-                    alert("Please fill all fields");
-                    return;
+                if (response.ok) {
+                    alert("Profile Configured Successfully!");
+                    document.getElementById("loginPhone").value = number;
+                    showLogin.click();
+                } else {
+                    alert(data.message || "Failed to finalize profile.");
                 }
-
-                const formData = new FormData();
-
-                formData.append("username", username);
-                formData.append("email", email);
-                formData.append("number", number);
-                formData.append("password", password);
-
-                if (profilePicture) {
-                    formData.append("profile", profilePicture);
-                }
-
-                try {
-
-                    const response = await fetch(
-                        "http://localhost:5000/api/auth/register",
-                        {
-                            method: "POST",
-                            body: formData
-                        }
-                    );
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-
-                        localStorage.setItem(
-                            "profilePicture",
-                            data.ProfilePicture
-                        );
-
-                        alert("Registered Successfully");
-
-                        formsContainer.classList.remove("active");
-
-                    } else {
-
-                        alert(data.message);
-
-                    }
-
-                } catch (error) {
-                    console.log(error);
-                }
-
-            });
+            } catch (error) {
+                console.error("Registration Client Error:", error);
+            }
+        });
 
     </script>
 
